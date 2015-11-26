@@ -5,8 +5,9 @@ Pilipay is short for Pilibaba's payment. This library provides pilipay's API (in
 
 API Reference
 =============
-The HTTP API reference: <http://api.pilibaba.com/doc/pilipay-http-api-reference.html>.
-As how to use in PHP, it's simple:
+Firstly please take a quick look at the [HTTP API reference](http://api.pilibaba.com/doc/pilipay-http-api-reference.html) to get familiar with the basic bussiness logics.
+
+As how to use in PHP, it's pretty simple:
 
 Submit an order
 ---------------
@@ -83,7 +84,7 @@ $order->merchantNo = '123123';
 $order->updateTrackNo($trackNo); // $trackNo must be the same with the track number on the package when shipping.
 ```
 
-Deal Pay Result
+Deal the pay result
 ----------------
 After the customer has paid, a request to `$order->serverUrl` would be sent. In order to properly deal this request, `PilipayPayResult` can be used. It's pretty simple. So just show the example code:
 
@@ -109,7 +110,7 @@ if (!$payResult->isSuccess()){
 
 ```
 
-Error Handling
+Handle errors
 ---------------
 When setting fields of an order or a good, submiting the order, and updating track number, if an error is encountered, a `pilipay\PilipayError` will be thrown. 
 So a `try ... catch` block should be used to deal errors.
@@ -123,8 +124,8 @@ try{
 }
 ```
 
-Logging
--------
+Record logs
+-----------
 `pilipay\PilipayLogger` provides a extendable logging. `pilipay\PilipayLogger::setHandler()` can be used to inject a logger handler. For example, logging to a file:
 ```php
 pilipay\PilipayLogger::instance()->setHandler(function($level, $msg){
