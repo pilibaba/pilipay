@@ -1,12 +1,6 @@
 <?php
-
-
-namespace pilipay;
-
-
 /**
  * Class PilipayGood
- * @package pilipay
  *
  * - required fields:
  * @property $name          string

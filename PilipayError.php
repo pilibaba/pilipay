@@ -1,17 +1,10 @@
 <?php
-
-
-namespace pilipay;
-
-use \Exception;
-
-
 class PilipayError extends Exception
 {
     /**
      * @param int $errorCode
      * @param array|string $errorData
-     * @param \Exception|null $previous
+     * @param Exception|null $previous
      */
     public function __construct($errorCode, $errorData, $previous=null){
         $msg = $this->buildErrorMessage($errorCode, $errorData);

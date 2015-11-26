@@ -1,11 +1,6 @@
 <?php
-
-
-namespace pilipay;
-
 /**
  * Class PilipayPayResult
- * @package pilipay
  * @property $errorCode
  * @property $errorMsg
  * @property $merchantNO

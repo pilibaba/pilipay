@@ -1,11 +1,6 @@
 <?php
-
-
-namespace pilipay;
-
 /**
  * Class PilipayLogger
- * @package pilipay
  */
 class PilipayLogger
 {

@@ -1,9 +1,4 @@
 <?php
-
-
-namespace pilipay;
-
-
 class PilipayCurl
 {
     private $additionalHeaders;
