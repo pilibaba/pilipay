@@ -116,7 +116,7 @@ So a `try ... catch` block should be used to deal errors.
 Example code:
 ```php
 try{
-
+	// submit order, update track number...
 } catch (pilipay\PilipayError $e) {
 	// deal the error
 	// $e->getMessage() will be detailed reason.
@@ -134,6 +134,6 @@ pilipay\PilipayLogger::instance()->setHandler(function($level, $msg){
 
 Support
 =========
-1. Our official API site: <http://www.pilibaba.com/en/api>
-2. Make an issue on github: <https://github.com/pilibaba/pilipay/issues/new>
+1. Make an issue on github: <https://github.com/pilibaba/pilipay/issues/new>
+2. Our official API site: <http://www.pilibaba.com/en/api>
 3. Send an email: developers(AT)pilibaba.com
