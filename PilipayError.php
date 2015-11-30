@@ -1,6 +1,12 @@
 <?php
 class PilipayError extends Exception
 {
+    const INVALID_ARGUMENT = 411;
+    const REQUIRED_ARGUMENT_NO_EXIST = 412;
+    const INVALID_SIGN = 413;
+    const PROPERTY_NOT_EXIST = 414;
+    const INVALID_CURL_PARAMS_FORMAT = 511;
+
     /**
      * @param int $errorCode
      * @param array|string $errorData
@@ -16,7 +22,7 @@ class PilipayError extends Exception
      * @param array|string $errorData
      * @return string
      */
-    public function buildErrorMessage($errorCode, $errorData){
+    protected function buildErrorMessage($errorCode, $errorData){
         if (is_array($errorData)){
             $params = array();
             foreach ($errorData as $key => $val){
@@ -29,13 +35,7 @@ class PilipayError extends Exception
         return strtr(self::$errorCodeToMessageMap[$errorCode], $params);
     }
 
-    const INVALID_ARGUMENT = 411;
-    const REQUIRED_ARGUMENT_NO_EXIST = 412;
-    const INVALID_SIGN = 413;
-    const PROPERTY_NOT_EXIST = 414;
-    const INVALID_CURL_PARAMS_FORMAT = 511;
-
-    private static $errorCodeToMessageMap = array(
+    protected static $errorCodeToMessageMap = array(
         self::INVALID_ARGUMENT => 'Invalid {name}: {value}',
         self::REQUIRED_ARGUMENT_NO_EXIST => 'The required {name} is empty: {value}',
         self::INVALID_SIGN => 'Invalid sign: {}',
