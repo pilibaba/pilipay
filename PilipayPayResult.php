@@ -6,19 +6,25 @@
  * @property $merchantNO
  * @property $orderNo
  * @property $orderAmount
+ * @property $signType
+ * @property $signMsg
+ * @property $sendTime
+ * @property $dealId
+ * @property $fee
+ * @property $customerMail
  */
 class PilipayPayResult
 {
-    private $merchantNO;
-    private $orderNo;
-    private $orderAmount;
-    private $signType;
-    private $payResult;
-    private $signMsg;
-    private $sendTime;
-    private $dealId;
-    private $fee;
-    private $customerMail;
+    protected $merchantNO;
+    protected $orderNo;
+    protected $orderAmount;
+    protected $signType;
+    protected $payResult;
+    protected $signMsg;
+    protected $sendTime;
+    protected $dealId;
+    protected $fee;
+    protected $customerMail;
 
     /**
      * @param array $request
@@ -29,8 +35,7 @@ class PilipayPayResult
         return new PilipayPayResult($request ? $request : $_REQUEST);
     }
 
-
-    private function __construct($request)
+    protected function __construct($request)
     {
         if (!empty($request)) {
             foreach ($request as $field => $value) {
@@ -70,6 +75,11 @@ class PilipayPayResult
         return $this->payResult == 10; // 10:pay success 11:pay fail
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     * @throws PilipayError
+     */
     public function __get($name)
     {
         $getter = 'get' . $name;
@@ -121,5 +131,53 @@ class PilipayPayResult
     public function getOrderAmount()
     {
         return $this->orderAmount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSignType()
+    {
+        return $this->signType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSignMsg()
+    {
+        return $this->signMsg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSendTime()
+    {
+        return $this->sendTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDealId()
+    {
+        return $this->dealId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFee()
+    {
+        return $this->fee;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCustomerMail()
+    {
+        return $this->customerMail;
     }
 }

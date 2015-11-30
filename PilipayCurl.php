@@ -52,8 +52,8 @@ class PilipayCurl
                 break;
         }
 
+        $headers = array();
         if (!empty($this->additionalHeaders)){
-            $headers = array();
             foreach ($this->additionalHeaders as $key => $value){
                 $headers[] = $key . ': ' . $value;
             }
@@ -65,7 +65,6 @@ class PilipayCurl
             curl_setopt($ch, $optKey, $optVal);
         }
 
-        $this->curlHandle = $ch;
         $response = curl_exec($ch);
         $curlInfo = curl_getinfo($ch);
         $errCode = curl_errno($ch);
