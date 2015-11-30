@@ -1,12 +1,6 @@
 <?php
-
-
-namespace pilipay;
-
-
 /**
  * Class PilipayGood
- * @package pilipay
  *
  * - required fields:
  * @property $name          string
@@ -27,6 +21,8 @@ namespace pilipay;
  */
 class PilipayGood extends PilipayModel
 {
+    const DEFAULT_PICTURE_URL = 'https://api.pilibaba.com/static/img/default-product.jpg';
+
     /**
      * 转换为API中的那种array表示形式
      * @return array
@@ -37,7 +33,7 @@ class PilipayGood extends PilipayModel
         return array_map('strval', array(
             // required:
             'name' => $this->name,
-            'pictureURL' => $this->pictureUrl,
+            'pictureURL' => $this->pictureUrl ? $this->pictureUrl : self::DEFAULT_PICTURE_URL,
             'price' => intval($this->price * 100), // API: need a price in cent (in order.currencyType)
             'productURL' => $this->productUrl,
             'productId' => $this->productId,

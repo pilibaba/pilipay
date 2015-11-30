@@ -1,9 +1,6 @@
 <?php
-
-namespace pilipay;
 /**
  * Class PilipayOrder
- * @package pilipay
  *
  * required:
  * @property $version      string  API version. currently v2.0.1

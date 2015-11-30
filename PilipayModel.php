@@ -1,12 +1,7 @@
 <?php
-
-
-namespace pilipay;
-
 /**
  * Class PilipayModel
  * -- provide a basic access of properties, whose name is case insensitive.
- * @package pilipay
  */
 class PilipayModel
 {

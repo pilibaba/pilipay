@@ -12,9 +12,9 @@ As how to use in PHP, it's pretty simple:
 Submit an order
 ---------------
 1. require the `bootstrap.php` in order to auto load the classes in pilipay.
-2. create an order by `$order = new pilipay\PilipayOrder()`.
+2. create an order by `$order = new PilipayOrder()`.
 3. fill essential fields in the order.
-4. create a good by `$good = new pilipay\PilipayGood()`.
+4. create a good by `$good = new PilipayGood()`.
 5. fill essential fields in the good.
 6. add good to the order by `$order->addGood($good);`.
 7. if there are more goods, repeate 4, 5, and 6.
@@ -26,7 +26,7 @@ Sample code:
 require 'path/to/pilipay/bootstrap.php';
 
 // create an order
-$order = new pilipay\PilipayOrder();
+$order = new PilipayOrder();
 $order->merchantNO = '1231312';  // a number for a merchant from pilibaba
 $order->appSecret = 'abcdefg'; // the secret key from pilibaba
 $order->currencyType = 'USD'; // indicates the unit of the following orderAmount, shipper, tax and price
@@ -40,7 +40,7 @@ $order->shipper = '1.23';
 $order->tax = '1.23';
 
 // create a good 
-$good = new pilipay\PilipayGood();
+$good = new PilipayGood();
 $good->name = 'Product Name';
 $good->pictureUrl = 'https://www.example-shop.com/path/to/product/picture';
 $good->price = '1.23';
@@ -54,7 +54,7 @@ $good->weightUnit = 'kg';
 $order->addGood($good);
 
 // if there are more goods, please add...
-//$good  = new pilipay\PilipayGood();
+//$good  = new PilipayGood();
 //...
 //$order->addGood($good);
 
@@ -93,7 +93,7 @@ After the customer has paid, a request to `$order->serverUrl` would be sent. In 
 require 'path/to/pilipay/bootstrap.php';
 
 // create an instance from the request
-$payResult = pilipay\PilipayPayResult::fromRequest();
+$payResult = PilipayPayResult::fromRequest();
 
 // verify whether the request is valid:
 if (!$payResult->verify($appSecret)){ // $appSecret is exactly the same with $order->appSecret
@@ -112,13 +112,13 @@ if (!$payResult->isSuccess()){
 
 Handle errors
 ---------------
-When setting fields of an order or a good, submiting the order, and updating track number, if an error is encountered, a `pilipay\PilipayError` will be thrown. 
+When setting fields of an order or a good, submiting the order, and updating track number, if an error is encountered, a `PilipayError` will be thrown. 
 So a `try ... catch` block should be used to deal errors.
 Example code:
 ```php
 try{
 	// submit order, update track number...
-} catch (pilipay\PilipayError $e) {
+} catch (PilipayError $e) {
 	// deal the error
 	// $e->getMessage() will be detailed reason.
 }
@@ -126,9 +126,9 @@ try{
 
 Record logs
 -----------
-`pilipay\PilipayLogger` provides a extendable logging. `pilipay\PilipayLogger::setHandler()` can be used to inject a logger handler. For example, logging to a file:
+`PilipayLogger` provides a extendable logging. `PilipayLogger::setHandler()` can be used to inject a logger handler. For example, logging to a file:
 ```php
-pilipay\PilipayLogger::instance()->setHandler(function($level, $msg){
+PilipayLogger::instance()->setHandler(function($level, $msg){
 	file_put_contents('path/to/pilipay/log/file', sprintf('%s %s: %s'.PHP_EOL, date('Y-m-d H:i:s'), $level, $msg));
 });
 ```

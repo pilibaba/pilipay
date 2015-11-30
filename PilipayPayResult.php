@@ -1,11 +1,6 @@
 <?php
-
-
-namespace pilipay;
-
 /**
  * Class PilipayPayResult
- * @package pilipay
  * @property $errorCode
  * @property $errorMsg
  * @property $merchantNO
@@ -60,6 +55,8 @@ class PilipayPayResult
             if ($throws) {
                 throw new PilipayError(PilipayError::INVALID_SIGN, $this->signMsg);
             }
+
+            return false;
         }
 
         return true;
