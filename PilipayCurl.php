@@ -72,7 +72,7 @@ class PilipayCurl
         $errMsg = curl_error($ch);
         curl_close($ch);
 
-        log_debug("CURL: ".print_r(array(
+        PilipayLogger::instance()->log('debug', "CURL: ".print_r(array(
                 'request' => array(
                     'method' => $method,
                     'url' => $url,
