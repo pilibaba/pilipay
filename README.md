@@ -11,7 +11,7 @@ As how to use in PHP, it's pretty simple:
 
 Submit an order
 ---------------
-1. require the `bootstrap.php` in order to auto load the classes in pilipay.
+1. require the `autoload.php` in order to auto load the classes in pilipay.
 2. create an order by `$order = new PilipayOrder()`.
 3. fill essential fields in the order.
 4. create a good by `$good = new PilipayGood()`.
@@ -22,8 +22,8 @@ Submit an order
 
 Sample code:
 ```php
-// bootstrap
-require 'path/to/pilipay/bootstrap.php';
+// autoload
+require 'path/to/pilipay/autoload.php';
 
 // create an order
 $order = new PilipayOrder();
@@ -65,15 +65,15 @@ die;
 
 Update tracking number
 ---------------------
-1. require the `bootstrap.php` in order to auto load the classes in pilipay.
+1. require the `autoload.php` in order to auto load the classes in pilipay.
 2. create an order by `$order = new PilipayOrder();`.
 3. fill essential fields into the order.
 4. invoke update by `$order->updateTrackNo($trackNo);`.
 
 Sample code:
 ```php
-// bootstrap
-require 'path/to/pilipay/bootstrap.php';
+// autoload
+require 'path/to/pilipay/autoload.php';
 
 // create an order
 $order = new PilipayOrder();
@@ -89,8 +89,8 @@ Deal the pay result
 After the customer has paid, a request to `$order->serverUrl` would be sent. In order to properly deal this request, `PilipayPayResult` can be used. It's pretty simple. So just show the example code:
 
 ```php
-// bootstrap
-require 'path/to/pilipay/bootstrap.php';
+// autoload
+require 'path/to/pilipay/autoload.php';
 
 // create an instance from the request
 $payResult = PilipayPayResult::fromRequest();
