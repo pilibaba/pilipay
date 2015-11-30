@@ -25,9 +25,9 @@
 class PilipayOrder extends PilipayModel
 {
     // 提交订单的接口地址
-    const SUBMIT_TARGET_URL = 'http://www.pilibaba.com/pilipay/payreq';
+    const SUBMIT_TARGET_URL = 'https://www.pilibaba.com/pilipay/payreq';
     // 更新运单号的接口地址
-    const UPDATE_TRACK_URL = 'http://www.pilibaba.com/pilipay/updateTrackNo';
+    const UPDATE_TRACK_URL = 'https://www.pilibaba.com/pilipay/updateTrackNo';
 
     private $_goodsList = array();
 
