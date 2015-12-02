@@ -3,7 +3,7 @@
  * Class PilipayOrder
  *
  * required:
- * @property $version      string  API version. currently v2.0.1
+ * @property $version      string  API version. currently v1.0.1
  * @property $merchantNO   string  merchant number in account info page after signed up in pilibaba.com
  * @property $appSecret    string  app secret key in account info page
  * @property $currencyType string  USD/EUR/GBP/AUD/CAD/JPY...
@@ -32,7 +32,7 @@ class PilipayOrder extends PilipayModel
     private $_goodsList = array();
 
     public function __construct($properties=array()){
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->signType = 'MD5';
 
         parent::__construct($properties);
