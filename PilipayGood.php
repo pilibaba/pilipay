@@ -10,7 +10,7 @@
  * @property $productId     string
  * @property $quantity      int
  * @property $weight        number
- * @property $weightUnit    string       g/kg/lb/oz
+ * @property $weightUnit    string       g/kg/lb(lbs)/oz
  *
  * - optional fields:
  * @property $attr          string      the good's attributes, like: color, size...
@@ -65,6 +65,7 @@ class PilipayGood extends PilipayModel
             case 'oz':
                 return $amount * 28.3495231; // 1盎司(oz)=28.3495231克(g)
             case 'lb':
+            case 'lbs':
                 return $amount * 453.59237; // 1磅(lb)=453.59237克(g)
             default:
                 throw new PilipayError(PilipayError::INVALID_ARGUMENT, array('name' => 'weightUnit', 'value' => $unit));
