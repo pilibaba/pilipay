@@ -28,12 +28,14 @@ class PilipayGood extends PilipayModel
      * @return array
      */
     public function toApiArray(){
+        $this->pictureUrl = $this->pictureUrl ? $this->pictureUrl : self::DEFAULT_PICTURE_URL;
+
         parent::verifyFields();
 
         return array_map('strval', array(
             // required:
             'name' => $this->name,
-            'pictureURL' => $this->pictureUrl ? $this->pictureUrl : self::DEFAULT_PICTURE_URL,
+            'pictureURL' => $this->pictureUrl,
             'price' => intval($this->price * 100), // API: need a price in cent (in order.currencyType)
             'productURL' => $this->productUrl,
             'productId' => $this->productId,
