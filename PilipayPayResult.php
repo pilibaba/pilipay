@@ -92,6 +92,22 @@ class PilipayPayResult
 
     // setter using the default
 
+    /**
+     * @param $result
+     * @param $message
+     * @param $redirectUrl
+     * @param $andDie bool
+     * @return null
+     */
+    public function returnDealResultToPilibaba($result, $message, $redirectUrl, $andDie=true){
+        echo "<result>$result</result><redirecturl>$redirectUrl</redirecturl><message>$message</message>";
+
+        if ($andDie){
+            die;
+        }
+
+        return null;
+    }
 
     /**
      * @return mixed

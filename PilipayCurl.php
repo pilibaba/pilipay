@@ -87,6 +87,7 @@ class PilipayCurl
 
         $headerSize = $curlInfo['header_size'];
         $this->responseHeaders = self::parseResponseHeader(substr($response, 0, $headerSize));
+        $this->responseHeaders['redirect_url'] = $curlInfo['redirect_url'];
         $this->responseContent = substr($response, $headerSize);
         return $this->responseContent;
     }
@@ -99,8 +100,13 @@ class PilipayCurl
                 $headers['version'] = $matches['version'];
                 $headers['statusCode'] = $matches['statusCode'];
                 $headers['statusText'] = $matches['statusText'];
-            } else if (preg_match('/^\s*(?<key>[^:]):\s*(?<value>.*)$/', $header, $matches)){
-                $headers[$matches['key']] = $matches['value'];
+                continue;
+            }
+
+            $delimeterPos = strpos($header, ':');
+            if ($delimeterPos !== false){
+                $key = trim(substr($header, 0, $delimeterPos));
+                $headers[$key] = trim(substr($header, $delimeterPos + 1));
             } else {
                 // ignore unknown headers...
             }
@@ -115,6 +121,15 @@ class PilipayCurl
 
     public function getResponseStatusText(){
         return $this->getResponseHeader('statusText');
+    }
+
+    public function getResponseRedirectUrl(){
+        $url = $this->getResponseHeader('redirect_url');
+        if ($url){
+            return $url;
+        } else {
+            return $this->getResponseHeader('Location');
+        }
     }
 
     public function getResponseHeader($key){

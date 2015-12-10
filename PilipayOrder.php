@@ -92,7 +92,7 @@ class PilipayOrder extends PilipayModel
         $curl = new PilipayCurl();
         $curl->post(self::SUBMIT_TARGET_URL, $orderData);
         $responseStatusCode = $curl->getResponseStatusCode();
-        $nextUrl = $curl->getResponseHeader('Location');
+        $nextUrl = $curl->getResponseRedirectUrl();
 
         PilipayLogger::instance()->log('info', 'Submit order end: '. print_r(array(
                 'request' => $orderData,
@@ -105,7 +105,7 @@ class PilipayOrder extends PilipayModel
             ), true));
 
         return array(
-            'success' => $responseStatusCode == '200' && !empty($nextUrl),
+            'success' => $responseStatusCode < 400 && !empty($nextUrl),
             'errorCode' => $responseStatusCode,
             'message' => $curl->getResponseContent(),
             'nextUrl' => $nextUrl
