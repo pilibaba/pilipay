@@ -63,6 +63,31 @@ echo $order->renderSubmitForm();
 die;
 ```
 
+Get the barcode
+---------------
+1. require the `autoload.php` in order to auto load the classes in pilipay.
+2. create an order by `$order = new PilipayOrder();`.
+3. fill essential fields into the order.
+4. get the barcode's picture URL by `$barcodePicUrl = $order->getBarcodePicUrl();`.
+
+Sample code:
+```
+// autoload
+require 'path/to/pilipay/autoload.php';
+
+// create an order
+$order = new PilipayOrder();
+
+// orderNo and merchantNo must be provided:
+$order->orderNo = '123123';
+$order->merchantNo = '123123';
+
+// get the barcode's picture URL:
+$barcodePicUrl = $order->getBarcodePicUrl();
+
+// do whatever you want to with the barcode
+```
+
 Update tracking number
 ---------------------
 1. require the `autoload.php` in order to auto load the classes in pilipay.
@@ -77,6 +102,8 @@ require 'path/to/pilipay/autoload.php';
 
 // create an order
 $order = new PilipayOrder();
+
+// orderNo and merchantNo must be provided:
 $order->orderNo = '123123';
 $order->merchantNo = '123123';
 
