@@ -154,5 +154,5 @@ PilipayLogger::instance()->setHandler(function($level, $msg){
 
 ## Support
 1. Make an issue on github: <https://github.com/pilibaba/pilipay/issues/new>
-2. Our official API site: <http://www.pilibaba.com/en/api>
+2. Our official API site: <http://en.pilibaba.com/api>
 3. Send an email: developers(AT)pilibaba.com
