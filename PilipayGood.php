@@ -1,29 +1,32 @@
 <?php
 /**
  * Class PilipayGood
+ * This class represent for a good in Pilipay.
+ * It's used when adding goods to an order.
  *
  * - required fields:
- * @property $name          string
- * @property $pictureUrl    string
- * @property $price         number       in order.currencyType
- * @property $productUrl    string
- * @property $productId     string
- * @property $quantity      int
- * @property $weight        number
- * @property $weightUnit    string       g/kg/lb(lbs)/oz
+ * @property $name          string      the product's name
+ * @property $pictureUrl    string      the URL for the product's main picture, which would be displayed on the order page for customers
+ * @property $price         number      the price of the product, including taxes. Its unit is the same with the currencyType of the order object.
+ * @property $productUrl    string      the URL for the product. It must be available so that customers could go back to confirm the product's information and buy again.
+ * @property $productId     string      the ID for the product. It must be unique in your shop, so that we can use it to identify the product.
+ * @property $quantity      int         it is how many this product is in the order.
+ * @property $weight        number      the weight of this single product.
+ * @property $weightUnit    string      the unit of the weight. i.e: g/kg/lb(lbs)/oz
  *
  * - optional fields:
- * @property $attr          string      the good's attributes, like: color, size...
- * @property $category      string      the good's category when taxing
- * @property $height        string      ?? and unit??
- * @property $length        string      ?? and unit??
- * @property $width         string      ?? and unit??
+ * @property $attr          string      the product's attributes, like: color, size...
+ * @property $category      string      the product's category when taxing
+ * @property $height        string      reserved for future usage
+ * @property $length        string      reserved for future usage
+ * @property $width         string      reserved for future usage
  */
 class PilipayGood extends PilipayModel
 {
     const DEFAULT_PICTURE_URL = 'https://api.pilibaba.com/static/img/default-product.jpg';
 
     /**
+     * Convert the object into an array format required in the HTTP API
      * 转换为API中的那种array表示形式
      * @return array
      */
@@ -52,6 +55,7 @@ class PilipayGood extends PilipayModel
     }
 
     /**
+     * Convert the weight into grams -- which is the unit of the HTTP API.
      * 将重量转换为以克为单位的数值
      * @param $amount
      * @param $unit

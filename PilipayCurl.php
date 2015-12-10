@@ -1,25 +1,61 @@
 <?php
+
+/**
+ * Class PilipayCurl
+ * This class provide an easier access to CURL.
+ * 这个类使CURL用起来更方便.
+ */
 class PilipayCurl
 {
     private $additionalHeaders;
     private $responseHeaders;
     private $responseContent;
 
+    /**
+     * Nothing to do, just creat the object
+     */
     public function __construct(){
     }
 
+    /**
+     * Set additional headers if you want to.
+     * Normally it's not necessary
+     * @param array $headers  in format: header key =>  header value
+     */
     public function setAdditionalHeaders($headers){
         $this->additionalHeaders = $headers;
     }
 
+    /**
+     * Make a POST request
+     * @param string $url               - the URL
+     * @param array|string|null $params - if it's a string, it will passed as it is; if it's an array, http_build_query will be used to convert it to a string
+     * @param int $timeout              - request timeout in seconds
+     * @return string                   - the response content (without headers)
+     */
     public function post($url, $params, $timeout=30){
         return $this->request('POST', $url, $params, $timeout);
     }
 
+    /**
+     * Make a GET request
+     * @param string $url               - the URL
+     * @param array|string|null $params - if it's a string, it will passed as it is; if it's an array, http_build_query will be used to convert it to a string
+     * @param int $timeout              - request timeout in seconds
+     * @return string                   - the response content (without headers)
+     */
     public function get($url, $params, $timeout=30){
         return $this->request('GET', $url, $params, $timeout);
     }
 
+    /**
+     * Make a $method request
+     * @param string $method            - GET/POST/...
+     * @param string $url               - the URL
+     * @param array|string|null $params - if it's a string, it will passed as it is; if it's an array, http_build_query will be used to convert it to a string
+     * @param int $timeout              - request timeout in seconds
+     * @return string                   - the response content (without headers)
+     */
     public function request($method, $url, $params, $timeout=30){
         $options = array(
             CURLOPT_HTTPGET => false,
@@ -92,6 +128,11 @@ class PilipayCurl
         return $this->responseContent;
     }
 
+    /**
+     * parse the response headers, convert into key => value formatted array
+     * @param string $headerText
+     * @return array
+     */
     public static function parseResponseHeader($headerText){
         $headers = array();
 
@@ -115,14 +156,23 @@ class PilipayCurl
         return $headers;
     }
 
+    /**
+     * @return string the response's status code, i.e: 200, 301, 400, 500...
+     */
     public function getResponseStatusCode(){
         return $this->getResponseHeader('statusCode');
     }
 
+    /**
+     * @return string the response's status text, i.e: OK, Found...
+     */
     public function getResponseStatusText(){
         return $this->getResponseHeader('statusText');
     }
 
+    /**
+     * @return string the URL for redirecting, normally when the status code is 30x
+     */
     public function getResponseRedirectUrl(){
         $url = $this->getResponseHeader('redirect_url');
         if ($url){
@@ -132,10 +182,17 @@ class PilipayCurl
         }
     }
 
+    /**
+     * @param string $key  - the header key
+     * @return string|null - the header value
+     */
     public function getResponseHeader($key){
         return $this->responseHeaders[$key];
     }
 
+    /**
+     * @return string|null - the response content (without headers)
+     */
     public function getResponseContent(){
         return $this->responseContent;
     }

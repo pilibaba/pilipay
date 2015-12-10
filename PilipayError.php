@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Class PilipayError
+ * This class represents for errors in Pilipay.
+ * For reducing the library's size, we use error code to distinguish different types of errors.
+ */
 class PilipayError extends Exception
 {
     const INVALID_ARGUMENT = 411;

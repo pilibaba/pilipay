@@ -1,30 +1,52 @@
 <?php
 /**
  * Class PilipayPayResult
- * @property $errorCode
- * @property $errorMsg
- * @property $merchantNO
- * @property $orderNo
- * @property $orderAmount
- * @property $signType
- * @property $signMsg
- * @property $sendTime
- * @property $dealId
- * @property $fee
- * @property $customerMail
+ * This class helps to deal the callback payment result.
+ * Note: directly `new` operation is not supported. You should always use `PilipayPayResult::fromRequest()` to create an instance.
+ *
+ * For example:
+ *
+ *     // create an instance from the request
+ *     $payResult = PilipayPayResult::fromRequest();
+ *
+ *     // verify whether the request is valid:
+ *     if (!$payResult->verify($appSecret)){ // $appSecret is exactly the same with $order->appSecret
+ *         // error handling...
+ *         die('Invalid request');
+ *     }
+ *
+ *     // judge whether payment is successfully completed:
+ *     if (!$payResult->isSuccess()){
+ *         // deal failure
+ *     } else {
+ *         // deal success
+ *     }
+ *
+ *
+ * @property $merchantNO    string  the merchant number.
+ * @property $orderNo       string  the order number. It's been passed to pilibaba via PilipayOrder.
+ * @property $orderAmount   number  the total amount of the order. Its unit is the currencyType in the submitted PilipayOrder.
+ * @property $signType      string  "MD5"
+ * @property $signMsg       string  it's used for verify the request. Please use `PilipayPayResult::verify()` to verify it.
+ * @property $sendTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
+ * @property $dealId        string  the transaction ID in Pilibaba.
+ * @property $fee           number  the fee for Pilibaba
+ * @property $customerMail  string  the customer's email address.
+ * @property $errorCode     string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
+ * @property $errorMsg      string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
  */
 class PilipayPayResult
 {
-    protected $merchantNO;
-    protected $orderNo;
-    protected $orderAmount;
-    protected $signType;
-    protected $payResult;
-    protected $signMsg;
-    protected $sendTime;
-    protected $dealId;
-    protected $fee;
-    protected $customerMail;
+    protected $_merchantNO;
+    protected $_orderNo;
+    protected $_orderAmount;
+    protected $_signType;
+    protected $_payResult;
+    protected $_signMsg;
+    protected $_sendTime;
+    protected $_dealId;
+    protected $_fee;
+    protected $_customerMail;
 
     /**
      * @param array $request
@@ -39,6 +61,7 @@ class PilipayPayResult
     {
         if (!empty($request)) {
             foreach ($request as $field => $value) {
+                $field = '_' . $field;
                 $this->{$field} = $value;
             }
         }
@@ -52,13 +75,13 @@ class PilipayPayResult
      */
     public function verify($appSecret, $throws = false)
     {
-        $calcedSignMsg = md5($this->merchantNO . $this->orderNo . intval($this->orderAmount) . $this->sendTime . $appSecret);
+        $calcedSignMsg = md5($this->_merchantNO . $this->_orderNo . intval($this->_orderAmount) . $this->_sendTime . $appSecret);
 
-        if ($calcedSignMsg != $this->signMsg){
-            PilipayLogger::instance()->log("error", "Invalid signMsg: " . $this->signMsg . " with secret: " . $appSecret . " with data: " . json_encode(get_object_vars($this)));
+        if ($calcedSignMsg != $this->_signMsg){
+            PilipayLogger::instance()->log("error", "Invalid signMsg: " . $this->_signMsg . " with secret: " . $appSecret . " with data: " . json_encode(get_object_vars($this)));
 
             if ($throws) {
-                throw new PilipayError(PilipayError::INVALID_SIGN, $this->signMsg);
+                throw new PilipayError(PilipayError::INVALID_SIGN, $this->_signMsg);
             }
 
             return false;
@@ -72,7 +95,7 @@ class PilipayPayResult
      */
     public function isSuccess()
     {
-        return $this->payResult == 10; // 10:pay success 11:pay fail
+        return $this->_payResult == 10; // 10:pay success 11:pay fail
     }
 
     /**
@@ -111,89 +134,100 @@ class PilipayPayResult
 
     /**
      * @return mixed
+     * @property $errorCode     string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
      */
     public function getErrorCode()
     {
-        return $this->payResult;
+        return $this->_payResult;
     }
 
     /**
      * @return mixed
+     * @property $errorMsg      string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
      */
     public function getErrorMsg()
     {
-        return $this->errorCode;
+        return $this->_errorCode;
     }
 
     /**
      * @return mixed
+     * @property $merchantNO    string  the merchant number.
      */
     public function getMerchantNO()
     {
-        return $this->merchantNO;
+        return $this->_merchantNO;
     }
 
     /**
      * @return mixed
+     * @property $orderNo       string  the order number. It's been passed to pilibaba via PilipayOrder.
      */
     public function getOrderNo()
     {
-        return $this->orderNo;
+        return $this->_orderNo;
     }
 
     /**
      * @return mixed
+     * @property $orderAmount   number  the total amount of the order. Its unit is the currencyType in the submitted PilipayOrder.
      */
     public function getOrderAmount()
     {
-        return $this->orderAmount;
+        return $this->_orderAmount / 100; // divide it by 100 -- as it's in cents over the HTTP API.
     }
 
     /**
      * @return mixed
+     * @property $signType      string  "MD5"
      */
     public function getSignType()
     {
-        return $this->signType;
+        return $this->_signType;
     }
 
     /**
      * @return mixed
+     * @property $signMsg       string  it's used for verify the request. Please use `PilipayPayResult::verify()` to verify it.
      */
     public function getSignMsg()
     {
-        return $this->signMsg;
+        return $this->_signMsg;
     }
 
     /**
      * @return mixed
+     * @property $sendTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
      */
     public function getSendTime()
     {
-        return $this->sendTime;
+        return $this->_sendTime;
     }
 
     /**
      * @return mixed
+     * @property $dealId        string  the transaction ID in Pilibaba.
      */
     public function getDealId()
     {
-        return $this->dealId;
+        return $this->_dealId;
     }
 
     /**
      * @return mixed
+     * @property $fee           number  the fee for Pilibaba
      */
     public function getFee()
     {
-        return $this->fee;
+        return $this->_fee;
     }
 
     /**
      * @return mixed
+     * @property $customerMail  string  the customer's email address.
      */
     public function getCustomerMail()
     {
-        return $this->customerMail;
+        return $this->_customerMail;
     }
 }
