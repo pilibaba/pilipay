@@ -26,8 +26,14 @@ class PilipayOrder extends PilipayModel
 {
     // 提交订单的接口地址
     const SUBMIT_TARGET_URL = 'https://www.pilibaba.com/pilipay/payreq';
+
     // 更新运单号的接口地址
     const UPDATE_TRACK_URL = 'https://www.pilibaba.com/pilipay/updateTrackNo';
+
+    // The interface URL for barcode
+    // 二维码的接口地址
+    const BARCODE_URL = 'https://www.pilibaba.com/pilipay/barCode';
+
 
     private $_goodsList = array();
 
@@ -174,6 +180,20 @@ HTML_CODE;
      */
     public function addGood(PilipayGood $good){
         $this->_goodsList[] = $good->toApiArray();
+    }
+
+    /**
+     * Get the barcode's Picture URL
+     * -- this barcode should be print on the cover of package before shipping, so that our warehouse could easily match the package.
+     * 获取条形码的图片URL
+     * -- 在邮寄前, 这个条形码应该打印到包裹的包装上, 以便我们的中转仓库识别包裹.
+     * @return string the barcode's Picture URL
+     */
+    public function getBarcodePicUrl(){
+        return self::BARCODE_URL . '?' . http_build_query(array(
+            'merchantNo' => $this->merchantNO,
+            'orderNo' => $this->orderNo,
+        ));
     }
 
     public function getNumericFieldNames(){
