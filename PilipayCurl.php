@@ -33,7 +33,7 @@ class PilipayCurl
      * @param int $timeout              - request timeout in seconds
      * @return string                   - the response content (without headers)
      */
-    public function post($url, $params, $timeout=30){
+    public function post($url, $params=null, $timeout=30){
         return $this->request('POST', $url, $params, $timeout);
     }
 
@@ -44,7 +44,7 @@ class PilipayCurl
      * @param int $timeout              - request timeout in seconds
      * @return string                   - the response content (without headers)
      */
-    public function get($url, $params, $timeout=30){
+    public function get($url, $params=null, $timeout=30){
         return $this->request('GET', $url, $params, $timeout);
     }
 
@@ -56,7 +56,7 @@ class PilipayCurl
      * @param int $timeout              - request timeout in seconds
      * @return string                   - the response content (without headers)
      */
-    public function request($method, $url, $params, $timeout=30){
+    public function request($method, $url, $params=null, $timeout=30){
         $options = array(
             CURLOPT_HTTPGET => false,
             CURLOPT_HEADER => true,

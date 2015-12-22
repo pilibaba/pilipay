@@ -3,7 +3,7 @@
  * Class PilipayOrder
  *
  * required:
- * @property $version      string  API version. currently v1.0.1
+ * @property $version      string  API version.
  * @property $merchantNO   string  merchant number in account info page after signed up in pilibaba.com
  * @property $appSecret    string  app secret key in account info page
  * @property $currencyType string  USD/EUR/GBP/AUD/CAD/JPY...
@@ -24,12 +24,6 @@
  */
 class PilipayOrder extends PilipayModel
 {
-    // 提交订单的接口地址
-    const SUBMIT_TARGET_URL = 'https://www.pilibaba.com/pilipay/payreq';
-
-    // 更新运单号的接口地址
-    const UPDATE_TRACK_URL = 'https://www.pilibaba.com/pilipay/updateTrackNo';
-
     // The interface URL for barcode
     // 二维码的接口地址
     const BARCODE_URL = 'https://www.pilibaba.com/pilipay/barCode';
@@ -38,7 +32,7 @@ class PilipayOrder extends PilipayModel
     private $_goodsList = array();
 
     public function __construct($properties=array()){
-        $this->version = '1.0.1';
+        $this->version = '1.0.7';
         $this->signType = 'MD5';
 
         parent::__construct($properties);
@@ -96,7 +90,7 @@ class PilipayOrder extends PilipayModel
 
         // submit
         $curl = new PilipayCurl();
-        $curl->post(self::SUBMIT_TARGET_URL, $orderData);
+        $curl->post(PilipayConfig::getSubmitOrderUrl(), $orderData);
         $responseStatusCode = $curl->getResponseStatusCode();
         $nextUrl = $curl->getResponseRedirectUrl();
 
@@ -123,7 +117,7 @@ class PilipayOrder extends PilipayModel
      * @return string
      */
     public function renderSubmitForm($method="POST"){
-        $action = self::SUBMIT_TARGET_URL;
+        $action = PilipayConfig::getSubmitOrderUrl();
 
         $orderData = $this->toApiArray();
 
@@ -161,7 +155,7 @@ HTML_CODE;
         PilipayLogger::instance()->log('info', "Update track NO: ".json_encode($params));
 
         $curl = new PilipayCurl();
-        $curl->get(self::UPDATE_TRACK_URL, $params);
+        $curl->get(PilipayConfig::getUpdateTrackNoUrl(), $params);
 
         PilipayLogger::instance()->log('info', 'Update track NO result: '. print_r(array(
                 'request' => $params,
@@ -190,7 +184,7 @@ HTML_CODE;
      * @return string the barcode's Picture URL
      */
     public function getBarcodePicUrl(){
-        return self::BARCODE_URL . '?' . http_build_query(array(
+        return PilipayConfig::getBarcodeUrl() . '?' . http_build_query(array(
             'merchantNo' => $this->merchantNO,
             'orderNo' => $this->orderNo,
         ));
