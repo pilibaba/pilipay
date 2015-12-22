@@ -9,6 +9,11 @@
  */
 class PilipayCurrency extends PilipayModel
 {
+    /**
+     * query all available currencies from pilibaba
+     * @param string $resultFormat objectList | stringList
+     * @return array
+     */
     public static function queryAll($resultFormat='objectList'){
         $curl = PilipayCurl::instance();
         $result = $curl->get(PilipayConfig::getWarehouseAddressListUrl());
@@ -18,7 +23,7 @@ class PilipayCurrency extends PilipayModel
 
         $json = json_decode($result, true);
         if (empty($json)){
-            return false;
+            return array();
         }
 
         if ($resultFormat !== 'objectList'){
