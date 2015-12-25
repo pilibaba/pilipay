@@ -5,11 +5,16 @@ class PilipayConfig
 {
     // Whether use HTTPS
     // 是否使用HTTPS
-    const USE_HTTPS = true;
+    private static $useHttps = true;
+
+    // Whether it use production env.
+    // 是否是生产环境
+    private static $useProductionEnv = true;
 
     // The domain of pilibaba
     // 霹雳爸爸的域名
-    const PILIBABA_DOMAIN = 'www.pilibaba.com';
+    const PILIBABA_DOMAIN_PRODUCTION = 'www.pilibaba.com';
+    const PILIBABA_DOMAIN_TEST = 'pre.pilibaba.com';
 
     // The interface PATH for submit order
     // 提交订单的接口地址
@@ -32,11 +37,79 @@ class PilipayConfig
     const SUPPORTED_CURRENCIES_PATH = '/pilipay/currencies';
 
     /**
+     * Check whether the configuration and PHP environment is OK
+     * 检查配置和PHP环境是否OK
+     * @param $errors array if all is OK, a empty array is returned. otherwise return a list of error message.
+     * @return bool whether OK
+     */
+    public static function check(&$errors){
+        $errors = array();
+
+        if (!extension_loaded('curl')){
+            $errors[] = 'Curl extension is required';
+        }
+
+        if (self::useHttps() && !extension_loaded('openssl')){
+            $errors[] = 'Openssl extension is required if you use HTTPS';
+        }
+
+        return empty($errors);
+    }
+
+    /**
+     * Get whether to use HTTPS
+     * 获取是否使用HTTPS
+     * @return bool
+     */
+    public static function useHttps(){
+        return self::$useHttps;
+    }
+
+    /**
+     * Set whether to use HTTPS
+     * 设置是否使用HTTPS
+     * @param bool|true $useHttps
+     */
+    public static function setUseHttps($useHttps=true){
+        self::$useHttps = $useHttps;
+    }
+
+    /**
+     * Get whether to use production env.
+     * 获取是否使用生产环境
+     * @return bool
+     */
+    public static function useProductionEnv(){
+        return self::$useProductionEnv;
+    }
+
+    /**
+     * Set whether to use production env.
+     * 设置是否使用生产环境
+     * @param bool|true $isProduction
+     */
+    public static function setUseProductionEnv($isProduction=true){
+        self::$useProductionEnv = $isProduction;
+    }
+
+    /**
+     * The host (including the protocol) of pilibaba
+     * @return string
+     */
+    public static function getPilibabaHost(){
+        if (self::$useProductionEnv){
+            return (self::$useHttps ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN_PRODUCTION;
+        } else {
+            return 'http://' . self::PILIBABA_DOMAIN_TEST;
+        }
+    }
+
+    /**
      * The interface URL for submit order
      * @return string
      */
     public static function getSubmitOrderUrl(){
-        return (self::USE_HTTPS ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN . self::SUBMIT_ORDER_PATH;
+        return self::getPilibabaHost() . self::SUBMIT_ORDER_PATH;
     }
 
     /**
@@ -44,7 +117,7 @@ class PilipayConfig
      * @return string
      */
     public static function getUpdateTrackNoUrl(){
-        return (self::USE_HTTPS ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN . self::UPDATE_TRACK_NO_PATH;
+        return self::getPilibabaHost() . self::UPDATE_TRACK_NO_PATH;
     }
 
     /**
@@ -52,7 +125,7 @@ class PilipayConfig
      * @return string
      */
     public static function getBarcodeUrl(){
-        return (self::USE_HTTPS ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN . self::BARCODE_PATH;
+        return self::getPilibabaHost() . self::BARCODE_PATH;
     }
 
     /**
@@ -60,7 +133,7 @@ class PilipayConfig
      * @return string
      */
     public static function getWarehouseAddressListUrl(){
-        return (self::USE_HTTPS ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN . self::WAREHOUSE_ADDRESS_PATH;
+        return self::getPilibabaHost() . self::WAREHOUSE_ADDRESS_PATH;
     }
 
     /**
@@ -68,6 +141,6 @@ class PilipayConfig
      * @return string
      */
     public static function getSupportedCurrenciesUrl(){
-        return (self::USE_HTTPS ? 'https' : 'http') . '://' . self::PILIBABA_DOMAIN . self::SUPPORTED_CURRENCIES_PATH;
+        return self::getPilibabaHost() . self::SUPPORTED_CURRENCIES_PATH;
     }
 }

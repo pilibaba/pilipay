@@ -32,7 +32,7 @@ class PilipayOrder extends PilipayModel
     private $_goodsList = array();
 
     public function __construct($properties=array()){
-        $this->version = '1.0.7';
+        $this->version = '1.0.8';
         $this->signType = 'MD5';
 
         parent::__construct($properties);
@@ -95,6 +95,7 @@ class PilipayOrder extends PilipayModel
         $nextUrl = $curl->getResponseRedirectUrl();
 
         PilipayLogger::instance()->log('info', 'Submit order end: '. print_r(array(
+                'url' => PilipayConfig::getSubmitOrderUrl(),
                 'request' => $orderData,
                 'response' => array(
                     'statusCode' => $curl->getResponseStatusCode(),
