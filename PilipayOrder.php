@@ -145,6 +145,7 @@ HTML_CODE;
     /**
      * Update track number (logistics number)
      * @param $logisticsNo
+     * @throws PilipayError
      */
     public function updateTrackNo($logisticsNo){
         $params = array(
@@ -156,8 +157,7 @@ HTML_CODE;
         PilipayLogger::instance()->log('info', "Update track NO: ".json_encode($params));
 
         $curl = new PilipayCurl();
-        $curl->get(PilipayConfig::getUpdateTrackNoUrl(), $params);
-
+        $response = $curl->post(PilipayConfig::getUpdateTrackNoUrl(), $params);
         PilipayLogger::instance()->log('info', 'Update track NO result: '. print_r(array(
                 'request' => $params,
                 'response' => array(
@@ -166,6 +166,14 @@ HTML_CODE;
                     'content' => $curl->getResponseContent()
                 )
             ), true));
+
+        if (!$response){
+            throw new PilipayError(PilipayError::EMPTY_RESPONSE, 'Updating tacking number');
+        }
+
+        if (strcasecmp(trim($response), 'success') !== 0){
+            throw new PilipayError(PilipayError::UPDATE_FAILED, 'Update tracking number failed: '.$response);
+        }
     }
 
     /**

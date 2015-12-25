@@ -13,6 +13,8 @@ class PilipayError extends Exception
     const PROPERTY_NOT_EXIST = 414;
     const INVALID_CURL_PARAMS_FORMAT = 511;
     const CURL_ERROR = 512;
+    const EMPTY_RESPONSE = 513;
+    const UPDATE_FAILED = 514;
 
     /**
      * @param int $errorCode
@@ -49,5 +51,7 @@ class PilipayError extends Exception
         self::PROPERTY_NOT_EXIST => 'Property not exist: {}',
         self::INVALID_CURL_PARAMS_FORMAT => 'Invalid CURL params\' format: {}',
         self::CURL_ERROR => 'CURL error: {}',
+        self::EMPTY_RESPONSE => '{} got an empty response',
+        self::UPDATE_FAILED => 'Update failed: {}',
     );
 }
