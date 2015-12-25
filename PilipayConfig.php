@@ -37,6 +37,26 @@ class PilipayConfig
     const SUPPORTED_CURRENCIES_PATH = '/pilipay/currencies';
 
     /**
+     * Check whether the configuration and PHP environment is OK
+     * 检查配置和PHP环境是否OK
+     * @param $errors array if all is OK, a empty array is returned. otherwise return a list of error message.
+     * @return bool whether OK
+     */
+    public static function check(&$errors){
+        $errors = array();
+
+        if (!extension_loaded('curl')){
+            $errors[] = 'Curl extension is required';
+        }
+
+        if (self::useHttps() && !extension_loaded('openssl')){
+            $errors[] = 'Openssl extension is required if you use HTTPS';
+        }
+
+        return empty($errors);
+    }
+
+    /**
      * Get whether to use HTTPS
      * 获取是否使用HTTPS
      * @return bool
