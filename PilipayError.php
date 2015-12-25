@@ -12,6 +12,7 @@ class PilipayError extends Exception
     const INVALID_SIGN = 413;
     const PROPERTY_NOT_EXIST = 414;
     const INVALID_CURL_PARAMS_FORMAT = 511;
+    const CURL_ERROR = 512;
 
     /**
      * @param int $errorCode
@@ -47,5 +48,6 @@ class PilipayError extends Exception
         self::INVALID_SIGN => 'Invalid sign: {}',
         self::PROPERTY_NOT_EXIST => 'Property not exist: {}',
         self::INVALID_CURL_PARAMS_FORMAT => 'Invalid CURL params\' format: {}',
+        self::CURL_ERROR => 'CURL error: {}',
     );
 }

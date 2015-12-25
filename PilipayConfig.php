@@ -45,8 +45,8 @@ class PilipayConfig
     public static function check(&$errors){
         $errors = array();
 
-        if (!extension_loaded('curl')){
-            $errors[] = 'Curl extension is required';
+        if (!extension_loaded('curl') && !function_exists('fsockopen')){
+            $errors[] = 'Curl extension or fsockopen is required';
         }
 
         if (self::useHttps() && !extension_loaded('openssl')){

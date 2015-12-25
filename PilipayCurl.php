@@ -11,6 +11,10 @@ class PilipayCurl
     private $responseHeaders;
     private $responseContent;
 
+    const CRLF = "\r\n";
+    const CRLF_LEN = 2;
+    const CRLFCRLF = "\r\n\r\n";
+
     /**
      * Nothing to do, just creat the object
      */
@@ -54,9 +58,17 @@ class PilipayCurl
      * @param string $url               - the URL
      * @param array|string|null $params - if it's a string, it will passed as it is; if it's an array, http_build_query will be used to convert it to a string
      * @param int $timeout              - request timeout in seconds
-     * @return string                   - the response content (without headers)
+     * @return string|bool              - the response content (without headers) or false if failed
      */
     public function request($method, $url, $params=null, $timeout=30){
+        if (extension_loaded('curl')){
+            return $this->_requestViaCurl($method, $url, $params, $timeout);
+        } else {
+            return $this->_requestViaFsockopen($method, $url, $params, $timeout);
+        }
+    }
+
+    protected function _requestViaCurl($method, $url, $params, $timeout){
         $options = array(
             CURLOPT_HTTPGET => false,
             CURLOPT_HEADER => true,
@@ -69,6 +81,8 @@ class PilipayCurl
             CURLOPT_CONNECTTIMEOUT => $timeout,
             CURLOPT_TIMEOUT => $timeout
         );
+
+        $additionalHeaders = $this->additionalHeaders;
 
         switch (strtoupper($method)){
             case 'GET':
@@ -83,14 +97,18 @@ class PilipayCurl
                 $options[CURLOPT_CUSTOMREQUEST] = $method;
                 if (!empty($params)){
                     $options[CURLOPT_POSTFIELDS] = (is_array($params) ? http_build_query($params) : strval($params));
-                    $this->additionalHeaders['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+                    $additionalHeaders['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
                 }
                 break;
         }
 
+        if (!$ch){
+            throw new PilipayError(PilipayError::CURL_ERROR, 'failed to initialize CURL');
+        }
+
         $headers = array();
-        if (!empty($this->additionalHeaders)){
-            foreach ($this->additionalHeaders as $key => $value){
+        if (!empty($additionalHeaders)){
+            foreach ($additionalHeaders as $key => $value){
                 $headers[] = $key . ': ' . $value;
             }
 
@@ -107,6 +125,10 @@ class PilipayCurl
         $errMsg = curl_error($ch);
         curl_close($ch);
 
+        $headerSize = $curlInfo['header_size'];
+        $responseHeader = substr($response, 0, $headerSize);
+        $responseBody = substr($response, $headerSize);
+
         PilipayLogger::instance()->log('debug', "CURL: ".print_r(array(
                 'request' => array(
                     'method' => $method,
@@ -117,15 +139,129 @@ class PilipayCurl
                 'response' => array(
                     'errno' => $errCode,
                     'error' => $errMsg,
-                    'content' => $response,
+                    'header' => $responseHeader,
+                    'body' => $responseBody,
                 )
             ), true));
 
-        $headerSize = $curlInfo['header_size'];
-        $this->responseHeaders = self::parseResponseHeader(substr($response, 0, $headerSize));
+        if ($errCode != 0 && $errMsg){
+            throw new PilipayError(PilipayError::CURL_ERROR, "{$errMsg} ($errCode)");
+        }
+
+        $this->responseHeaders = self::parseResponseHeader($responseHeader);
         $this->responseHeaders['redirect_url'] = $curlInfo['redirect_url'];
-        $this->responseContent = substr($response, $headerSize);
+        $this->responseContent = $responseBody;
         return $this->responseContent;
+    }
+
+    protected function _requestViaFsockopen($method, $url, $params, $timeout){
+        // prepare
+        $additionalHeaders = array_merge(array(
+            'Connection' => 'close',
+            'User-Agent' => 'curl',
+            'Accept' => 'text/html,text/*,*/*',
+        ), (array)$this->additionalHeaders);
+        $requestContent = '';
+        $urlInfo = parse_url($url);
+
+        switch ($method){
+            case 'GET':
+                if (!empty($params)){
+                    $urlInfo['query'] = (!empty($urlInfo['query']) ? $urlInfo['query'] . '&' . http_build_query($params) : http_build_query($params));
+                }
+                break;
+            default: // POST, DELETE...
+                if (!empty($params)){
+                    $requestContent = http_build_query($params);
+                    $additionalHeaders['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+                    $additionalHeaders['Content-Length'] = strlen($requestContent);
+                }
+                break;
+        }
+
+        // build headers of request
+        $requestHeaders = array(
+            strtr('{method} {pathAndQuery} HTTP/1.1', array(
+                    '{method}' => strtoupper($method),
+                    '{pathAndQuery}' => (!empty($urlInfo['path']) ? $urlInfo['path'] : '/')
+                                      . (!empty($urlInfo['query']) ? '?' . $urlInfo['query'] : '')
+                )),
+            'Host: ' . $urlInfo['host'],
+        );
+
+        foreach ($additionalHeaders as $headerKey => $headerValue){
+            $requestHeaders[] = "{$headerKey}: {$headerValue}";
+        }
+
+        $request = implode(self::CRLF, $requestHeaders) . self::CRLFCRLF . $requestContent;
+
+        // open sock file
+        if ($urlInfo['scheme'] == 'https'){
+            $sockFileName = 'ssl://' . $urlInfo['host'];
+            $sockPort = isset($urlInfo['port']) ? intval($urlInfo['port']) : 443;
+        } else {
+            $sockFileName = $urlInfo['host'];
+            $sockPort = isset($urlInfo['port']) ? intval($urlInfo['port']) : 80;
+        }
+
+        $sockFile = fsockopen($sockFileName, $sockPort, $sockErrCode, $sockErrMsg, $timeout);
+        if (!$sockFile){
+            throw new PilipayError(PilipayError::CURL_ERROR, "failed to open sock file: {$sockErrMsg} ($sockErrCode)");
+        }
+
+        // write the request
+        fwrite($sockFile, $request);
+
+        // read the response
+        $gotResponseHeaderEnd = false;
+        $hasResponseContentLenInHeader = false;
+        $responseBodyLen = false;
+        $responseHeader = '';
+        $responseBody = '';
+        while (!feof($sockFile)) {
+            $line = fgets($sockFile);
+            if (!$gotResponseHeaderEnd){
+                if ($line === self::CRLF){
+                    $gotResponseHeaderEnd = true;
+                    $this->responseHeaders = $this->parseResponseHeader($responseHeader);
+                    if ($this->responseHeaders['Content-Length']){
+                        $responseBodyLen = $this->responseHeaders['Content-Length'];
+                        $hasResponseContentLenInHeader = true;
+                    }
+                } else {
+                    $responseHeader .= $line;
+                }
+            } else {
+                $responseBody .= $line;
+            }
+        }
+
+        fclose($sockFile);
+
+        if (!$hasResponseContentLenInHeader){
+            // parse the response-body-len from hex token
+            // then, cut down the response body
+            $responseBody = $this->parseResponseBody($responseBody);
+        }
+
+        PilipayLogger::instance()->log('debug', "CURL: ".print_r(array(
+                'request' => array(
+                    'method' => $method,
+                    'url' => $url,
+                    'params' => $params,
+                    'headers' => $requestHeaders,
+                ),
+                'response' => array(
+                    'errno' => $sockErrCode,
+                    'error' => $sockErrMsg,
+                    'header' => $responseHeader,
+                    'body' => $responseBody,
+                )
+            ), true));
+
+        $this->responseContent = $responseBody;
+
+        return $responseBody;
     }
 
     /**
@@ -154,6 +290,23 @@ class PilipayCurl
         }
 
         return $headers;
+    }
+
+    public static function parseResponseBody($rest){
+        $responseBody = '';
+
+        while (true){
+            $crlfPos = strpos($rest, self::CRLF);
+            if ($crlfPos === false){
+                break;
+            }
+
+            sscanf(substr($rest, 0, $crlfPos), "%x", $responseBodyLen);
+            $responseBody .= substr($rest, $crlfPos + self::CRLF_LEN, $responseBodyLen);
+            $rest = substr($rest, $crlfPos + self::CRLF_LEN + $responseBodyLen + self::CRLF_LEN);
+        }
+
+        return $responseBody;
     }
 
     /**

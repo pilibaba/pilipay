@@ -7,6 +7,23 @@ Firstly please take a quick look at the [HTTP API reference](http://api.pilibaba
 
 As how to use in PHP, it's pretty simple:
 
+### Checking Requirements
+First of all, you should check the requirements via `PilipayConfig::check()`. If requirements is not satisfied, there would be some errors when using this library.
+Example Code:
+```php
+// check requirements:
+if (!PilipayConfig::check($errors)) {
+	// prompt errors to the merchant or administractor
+	echo "Error: Pilipay requirements is not satisfied: \n";
+	echo implode("\n", $errors);
+}
+
+```
+Currently, the following requirements are to be checked:
+
+1. `curl` or `fsockopen` to make requests
+2. `openssl` to make HTTPS requests
+
 ### Submit an order
 1. require the `autoload.php` in order to auto load the classes in pilipay.
 2. create an order by `$order = new PilipayOrder()`.
@@ -152,7 +169,23 @@ PilipayLogger::instance()->setHandler(function($level, $msg){
 });
 ```
 
+### Configurations
+There are some helpful configurations:
+
+1. `useHttps` defines whether to use HTTPS - although HTTPS is recommend by default, you might want to use HTTP in some circumstances.
+2. `useProductionEnv` defines whether to use the production environment. It's default value is `true`. But when you are testing, it is recommend to set `useProductionEnv` to `false`. After that, you will not need to pay real money to complete an order. Orders will be simulated as if be paid.
+
+Example code:
+```php
+// Not recommended: use HTTP interface - maybe openssl on the server cannot work.
+PilipayConfig::setUseHttps(false);
+
+// When testing, do not use production environment:
+PilipayConfig::setUseProductionEnv(false);
+
+```
+
 ## Support
-1. Make an issue on github: <https://github.com/pilibaba/pilipay/issues/new>
-2. Our official API site: <http://en.pilibaba.com/api>
+1. [Make an issue on github](https://github.com/pilibaba/pilipay/issues/new)
+2. [Our official API site](http://api.pilibaba.com/)
 3. Send an email: developers(AT)pilibaba.com
