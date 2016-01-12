@@ -1,5 +1,6 @@
 <?php
 /**
+ * NOTICE OF LICENSE
  * Class PilipayPayResult
  * This class helps to deal the callback payment result.
  * Note: directly `new` operation is not supported. You should always use `PilipayPayResult::fromRequest()` to create an instance.
