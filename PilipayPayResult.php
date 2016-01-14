@@ -56,30 +56,31 @@
  *     }
  *
  *
- * @property $merchantNO    string  the merchant number.
+ * @property $merchantNo    string  the merchant number.
  * @property $orderNo       string  the order number. It's been passed to pilibaba via PilipayOrder.
  * @property $orderAmount   number  the total amount of the order. Its unit is the currencyType in the submitted PilipayOrder.
  * @property $signType      string  "MD5"
  * @property $signMsg       string  it's used for verify the request. Please use `PilipayPayResult::verify()` to verify it.
- * @property $sendTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
- * @property $dealId        string  the transaction ID in Pilibaba.
+ * @property $orderTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
  * @property $fee           number  the fee for Pilibaba
  * @property $customerMail  string  the customer's email address.
  * @property $errorCode     string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
  * @property $errorMsg      string  used for recording errors. If you want to check whether the payment is successfully completed, please use `isSuccess()` instead
+ * @property $dealId        string  the transaction ID in Pilibaba.
  */
 class PilipayPayResult
 {
-    protected $_merchantNO;
+    protected $_merchantNo;
     protected $_orderNo;
     protected $_orderAmount;
     protected $_signType;
-    protected $_payResult;
     protected $_signMsg;
-    protected $_sendTime;
-    protected $_dealId;
     protected $_fee;
+    protected $_orderTime;
     protected $_customerMail;
+    protected $_errorCode;
+    protected $_errorMessage;
+    protected $_dealId;
 
     /**
      * @param array $request
@@ -108,7 +109,9 @@ class PilipayPayResult
      */
     public function verify($appSecret, $throws = false)
     {
-        $calcedSignMsg = md5($this->_merchantNO . $this->_orderNo . intval($this->_orderAmount) . $this->_sendTime . $appSecret);
+        $calcedSignMsg = md5($this->_merchantNo . $this->_orderNo . $this->_orderAmount
+                            . $this->_signType . $this->_dealId . $this->_fee
+                            . $this->_orderTime . $this->_customerMail . $appSecret);
 
         if ($calcedSignMsg != $this->_signMsg){
             PilipayLogger::instance()->log("error", "Invalid signMsg: " . $this->_signMsg . " with secret: " . $appSecret . " with data: " . json_encode(get_object_vars($this)));
@@ -128,7 +131,7 @@ class PilipayPayResult
      */
     public function isSuccess()
     {
-        return $this->_payResult == 10; // 10:pay success 11:pay fail
+        return $this->errorCode == 10000; // 10000:pay success other:pay fail
     }
 
     /**
@@ -171,7 +174,7 @@ class PilipayPayResult
      */
     public function getErrorCode()
     {
-        return $this->_payResult;
+        return $this->_errorCode;
     }
 
     /**
@@ -180,16 +183,16 @@ class PilipayPayResult
      */
     public function getErrorMsg()
     {
-        return $this->_errorCode;
+        return $this->_errorMessage;
     }
 
     /**
      * @return mixed
-     * @property $merchantNO    string  the merchant number.
+     * @property $merchantNo    string  the merchant number.
      */
-    public function getMerchantNO()
+    public function getMerchantNo()
     {
-        return $this->_merchantNO;
+        return $this->_merchantNo;
     }
 
     /**
@@ -230,11 +233,11 @@ class PilipayPayResult
 
     /**
      * @return mixed
-     * @property $sendTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
+     * @property $orderTime      string  the time when the order was sent. Its format is like "2011-12-13 14:15:16".
      */
-    public function getSendTime()
+    public function getOrderTime()
     {
-        return $this->_sendTime;
+        return $this->_orderTime;
     }
 
     /**

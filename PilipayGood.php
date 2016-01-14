@@ -49,10 +49,7 @@
  *
  * - optional fields:
  * @property $attr          string      the product's attributes, like: color, size...
- * @property $category      string      the product's category when taxing
- * @property $height        string      reserved for future usage
- * @property $length        string      reserved for future usage
- * @property $width         string      reserved for future usage
+ *
  */
 class PilipayGood extends PilipayModel
 {
@@ -71,19 +68,15 @@ class PilipayGood extends PilipayModel
         return array_map('strval', array(
             // required:
             'name' => $this->name,
-            'pictureURL' => $this->pictureUrl,
+            'pictureUrl' => $this->pictureUrl,
             'price' => intval($this->price * 100), // API: need a price in cent (in order.currencyType)
-            'productURL' => $this->productUrl,
+            'productUrl' => $this->productUrl,
             'productId' => $this->productId,
             'quantity' => intval($this->quantity),
             'weight' => intval(self::convertWeightToGram($this->weight, $this->weightUnit)),
 
             // optional:
             'attr' => $this->attr,
-            'category' => $this->category,
-            'height' => $this->height,
-            'length' => $this->length,
-            'width' => $this->width,
         ));
     }
 
