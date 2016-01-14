@@ -152,14 +152,17 @@ class PilipayPayResult
     // setter using the default
 
     /**
-     * @param $result
-     * @param $message
-     * @param $redirectUrl
+     * return result to pilibaba
+     * @param $result "1" or "OK" means result is success
      * @param $andDie bool
      * @return null
      */
-    public function returnDealResultToPilibaba($result, $message, $redirectUrl, $andDie=true){
-        echo "<result>$result</result><redirecturl>$redirectUrl</redirecturl><message>$message</message>";
+    public function returnDealResultToPilibaba($result, $andDie=true){
+        if ($result == 1 or $result == 'OK'){
+            echo 'OK';
+        } else {
+            echo $result;
+        }
 
         if ($andDie){
             die;
