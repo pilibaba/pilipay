@@ -113,7 +113,7 @@ class PilipayPayResult
                             . $this->_signType . $this->_dealId . $this->_fee
                             . $this->_orderTime . $this->_customerMail . $appSecret);
 
-        if ($calcedSignMsg != $this->_signMsg){
+        if (strcasecmp($calcedSignMsg, $this->_signMsg) !== 0){
             PilipayLogger::instance()->log("error", "Invalid signMsg: " . $this->_signMsg . " with secret: " . $appSecret . " with data: " . json_encode(get_object_vars($this)));
 
             if ($throws) {
@@ -131,7 +131,7 @@ class PilipayPayResult
      */
     public function isSuccess()
     {
-        return $this->errorCode == 10000; // 10000:pay success other:pay fail
+        return true; // currently, if there is a callback request, it means the payment is successfully completed.
     }
 
     /**
