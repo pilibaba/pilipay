@@ -48,7 +48,7 @@ class PilipayCurrency extends PilipayModel
      */
     public static function queryAll($resultFormat='objectList'){
         $curl = PilipayCurl::instance();
-        $result = $curl->get(PilipayConfig::getWarehouseAddressListUrl());
+        $result = $curl->get(PilipayConfig::getSupportedCurrenciesUrl());
         if (empty($result)){
             return array();
         }

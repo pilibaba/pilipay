@@ -37,6 +37,7 @@
  * This class helps to query all warehouse addresses of pilibaba
  *
  * @property string $country        - the country of the warehouse
+ * @property string $countryCode    - the country code of the warehouse @see https://en.wikipedia.org/wiki/ISO_3166-1
  * @property string $firstName      - the first name of the receiver
  * @property string $lastName       - the last name of the receiver
  * @property string $address        - the address of the warehouse

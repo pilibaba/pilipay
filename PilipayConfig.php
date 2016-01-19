@@ -68,7 +68,7 @@ class PilipayConfig
 
     // The interface PATH for get supported currencies
     // 所支持的货币的接口地址
-    const SUPPORTED_CURRENCIES_PATH = '/pilipay/currencies';
+    const SUPPORTED_CURRENCIES_PATH = '/pilipay/getCurrency';
 
     /**
      * Check whether the configuration and PHP environment is OK

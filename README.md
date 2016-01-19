@@ -41,13 +41,11 @@ require 'path/to/pilipay/autoload.php';
 
 // create an order
 $order = new PilipayOrder();
-$order->merchantNO = '1231312';  // a number for a merchant from pilibaba
+$order->merchantNo = '1231312';  // a number for a merchant from pilibaba
 $order->appSecret = 'abcdefg'; // the secret key from pilibaba
 $order->currencyType = 'USD'; // indicates the unit of the following orderAmount, shipper, tax and price
 $order->orderNo = '1231231231';
 $order->orderAmount = '1.23';
-$order->orderTime = '2015-11-12 13:14:15';
-$order->sendTime = '2015-11-12 13:14:15';
 $order->pageUrl = 'https://www.example-shop.com/path/to/some/product';
 $order->serverUrl = 'https://www.example-shop.com/path/to/paid/callback';
 $order->shipper = '1.23';
