@@ -107,7 +107,6 @@ class PilipayOrder extends PilipayModel
             'shipper' => intval($this->shipper * 100), // API: need to be in cent
             'tax' => intval($this->tax * 100), // API: need to be in cent
             'signType' => $this->signType,
-            'goodsList' => urlencode(json_encode($this->_goodsList))
         ));
 
         // sign
@@ -118,6 +117,8 @@ class PilipayOrder extends PilipayModel
         } else {
             throw new PilipayError(PilipayError::INVALID_ARGUMENT, array('name' => 'signType', 'value' => $this->signType));
         }
+
+        $apiArray['goodsList'] = urlencode(json_encode($this->_goodsList));
 
         return $apiArray;
     }
