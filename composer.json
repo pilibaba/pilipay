@@ -1,0 +1,8 @@
+{
+    "name": "Pilibaba/pilipay-php",
+    "description": "Pilipay is short for Pilibaba's payment. This library provides pilipay's API (in PHP).",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "homepage": "http://www.pilibaba.com/"
+}
